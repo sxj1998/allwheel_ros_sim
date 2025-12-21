@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="ALL_WHEEL">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="3.28903571045203E-15 2.98188123498688E-15 -0.0102615683558075"
+        rpy="0 0 0" />
+      <mass
+        value="0.255742000192013" />
+      <inertia
+        ixx="0.000302796409258889"
+        ixy="-4.24121783764603E-19"
+        ixz="-1.46681398501134E-19"
+        iyy="0.000302202648247359"
+        iyz="-9.69852724606174E-20"
+        izz="0.000556226204689963" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="front_link">
+    <inertial>
+      <origin
+        xyz="0.00291772242218889 -3.93580977784489E-17 3.65218117332201E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.109903140807102" />
+      <inertia
+        ixx="2.82980917306225E-05"
+        ixy="7.75092545429254E-22"
+        ixz="-1.75730251100278E-21"
+        iyy="1.73831765621433E-05"
+        iyz="8.02034321931416E-21"
+        izz="1.73831765621433E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/front_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/front_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="front_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.0990025403784439 0 -0.0351150000000006"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="front_link" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="right_Link">
+    <inertial>
+      <origin
+        xyz="0.00291772242218885 -8.32667268468867E-17 3.44765127617768E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.109903140807102" />
+      <inertia
+        ixx="2.82980917306225E-05"
+        ixy="3.81164826264435E-21"
+        ixz="-2.74119712050728E-21"
+        iyy="1.73831765621433E-05"
+        iyz="1.03863424365133E-20"
+        izz="1.73831765621432E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/right_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/right_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0495012701892215 -0.0857387150069273 -0.0351150000000006"
+      rpy="0 0 -2.09439510239319" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_Link" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="left_Link">
+    <inertial>
+      <origin
+        xyz="0.00291772242218893 -1.11022302462516E-16 3.90301618862159E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.109903140807102" />
+      <inertia
+        ixx="2.82980917306225E-05"
+        ixy="2.11758236813575E-21"
+        ixz="-4.34592750886023E-21"
+        iyy="1.73831765621433E-05"
+        iyz="6.84580903936861E-21"
+        izz="1.73831765621432E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/left_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/left_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="-0.049501270189222 0.085738715006927 -0.0351150000000006"
+      rpy="0 0 2.0943951023932" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_Link" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="imu_Link">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-17 -1.64798730217798E-17 0.00113640101443913"
+        rpy="0 0 0" />
+      <mass
+        value="0.025372414405334" />
+      <inertia
+        ixx="1.71772106186452E-05"
+        ixy="-2.24735149206158E-21"
+        ixz="1.71523783820048E-22"
+        iyy="2.34928022119539E-05"
+        iyz="-1.72053567411033E-21"
+        izz="3.76216806096735E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/imu_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ALL_WHEEL/meshes/imu_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="imu_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0.032"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="imu_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

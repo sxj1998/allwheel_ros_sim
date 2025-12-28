@@ -14,9 +14,9 @@
   </joint>
 
   <!-- ========================= -->
-  <!--   NOTE: Absolute mesh dir -->
+  <!--   Mesh dir via package://  -->
   <!-- ========================= -->
-  <!-- MESH_DIR = /home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes -->
+  <!-- MESH_DIR = package://all_wheel_description/meshes -->
 
   <link name="base_link">
     <inertial>
@@ -34,7 +34,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/base_link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/base_link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
@@ -44,7 +44,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/base_link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/base_link.STL"/>
       </geometry>
     </collision>
   </link>
@@ -65,7 +65,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/front_link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/front_link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1"/>
@@ -75,7 +75,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/front_link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/front_link.STL"/>
       </geometry>
     </collision>
   </link>
@@ -103,7 +103,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/right_Link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/right_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1"/>
@@ -113,7 +113,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/right_Link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/right_Link.STL"/>
       </geometry>
     </collision>
   </link>
@@ -141,7 +141,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/left_Link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/left_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1"/>
@@ -151,7 +151,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/left_Link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/left_Link.STL"/>
       </geometry>
     </collision>
   </link>
@@ -179,7 +179,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/imu_Link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/imu_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
@@ -189,7 +189,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/meshes/imu_Link.STL"/>
+        <mesh filename="package://all_wheel_description/meshes/imu_Link.STL"/>
       </geometry>
     </collision>
   </link>

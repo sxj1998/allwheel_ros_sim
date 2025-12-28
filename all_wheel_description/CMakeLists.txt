@@ -28,4 +28,9 @@ install(
   DESTINATION share/${PROJECT_NAME}/config
 )
 
+install(
+  DIRECTORY models/
+  DESTINATION share/${PROJECT_NAME}/models
+)
+
 ament_package()

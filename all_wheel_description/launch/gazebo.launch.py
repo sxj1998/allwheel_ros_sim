@@ -16,13 +16,12 @@ def generate_launch_description():
     urdf_model_path = os.path.join(pkg_share, 'urdf', urdf_name)
     gazebo_world_path = os.path.join(pkg_share, 'world', 'bot.world')
 
-    # 关键：让 Gazebo 能找到你包里的 model / map
-    # 你的 map 在 world/map 下（里面有 model.config 和 model.sdf），要把 world 目录加入 GAZEBO_MODEL_PATH
-    gazebo_model_path = os.path.join(pkg_share, 'world')
-
+    # 关键：让 model://all_wheel_description/... 找到包内 meshes，同时保留 map 模型
+    model_path_root = os.path.join(pkg_share, 'models')
+    map_model_path = os.path.join(pkg_share, 'world', 'map')
     set_gazebo_model_path = SetEnvironmentVariable(
         name='GAZEBO_MODEL_PATH',
-        value=gazebo_model_path + ':' + os.environ.get('GAZEBO_MODEL_PATH', '')
+        value=':'.join([p for p in [model_path_root, map_model_path, os.environ.get('GAZEBO_MODEL_PATH', '')] if p])
     )
 
     # 可选但强烈建议：禁用在线模型库，避免卡在 models.gazebosim.org

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="all_wheel_description_placeholder">
+    <static>true</static>
+    <link name="dummy">
+      <pose>0 0 0 0 0 0</pose>
+      <collision name="dummy_collision">
+        <geometry>
+          <sphere><radius>0.001</radius></sphere>
+        </geometry>
+      </collision>
+      <visual name="dummy_visual">
+        <geometry>
+          <sphere><radius>0.001</radius></sphere>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

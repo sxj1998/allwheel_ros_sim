@@ -67,6 +67,14 @@ def generate_launch_description():
         arguments=[urdf_model_path],
         output='screen',
     )
+    
+    joint_state_publisher_cmd = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        output='screen',
+    )
+
 
     start_rviz_cmd = Node(
         package='rviz2',
@@ -82,5 +90,7 @@ def generate_launch_description():
     ld.add_action(delayed_spawn)
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(start_rviz_cmd)
+    ld.add_action(joint_state_publisher_cmd)
+
 
     return ld

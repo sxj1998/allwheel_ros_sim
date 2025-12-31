@@ -2,7 +2,7 @@ import os
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction, SetEnvironmentVariable
-from launch.event_handlers import OnProcessStart
+from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -17,6 +17,7 @@ def generate_launch_description():
     pkg_share = FindPackageShare(package=package_name).find(package_name)
     urdf_model_path = os.path.join(pkg_share, 'urdf', urdf_name)
     gazebo_world_path = os.path.join(pkg_share, 'world', 'bot.world')
+    controllers_path = os.path.join(pkg_share, 'config', 'ros2_controllers.yaml')
 
     # Gazebo 模型路径设置（保证 model:// 可解析）
     model_path_root = os.path.join(pkg_share, 'models')
@@ -65,18 +66,54 @@ def generate_launch_description():
         )
     )
 
+    # 加载 ros2_control 控制器并启动底盘速度转换
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'joint_state_broadcaster',
+            '--controller-manager', '/controller_manager',
+            '--param-file', controllers_path,
+            '--controller-manager-timeout', '60',
+        ],
+        output='screen',
+    )
+    wheel_velocity_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'wheel_velocity_controller',
+            '--controller-manager', '/controller_manager',
+            '--param-file', controllers_path,
+            '--controller-manager-timeout', '60',
+        ],
+        output='screen',
+    )
+    omni_cmd_vel_cmd = Node(
+        package=package_name,
+        executable='omni_cmd_vel.py',
+        name='omni_cmd_vel',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+    start_controllers = RegisterEventHandler(
+        OnProcessExit(
+            target_action=spawn_entity_cmd,
+            on_exit=[
+                joint_state_broadcaster_spawner,
+                wheel_velocity_controller_spawner,
+                omni_cmd_vel_cmd,
+            ],
+        )
+    )
+
     # ROS 2 节点：TF、关节状态、可视化
     start_robot_state_publisher_cmd = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         arguments=[urdf_model_path],
         output='screen',
-    )
-    joint_state_publisher_cmd = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
-        output='screen',
+        parameters=[{'use_sim_time': True}],
     )
     start_rviz_cmd = Node(
         package='rviz2',
@@ -91,8 +128,8 @@ def generate_launch_description():
     ld.add_action(disable_model_db)
     ld.add_action(start_gazebo_cmd)
     ld.add_action(delayed_spawn)
+    ld.add_action(start_controllers)
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(start_rviz_cmd)
-    ld.add_action(joint_state_publisher_cmd)
 
     return ld

@@ -33,4 +33,11 @@ install(
   DESTINATION share/${PROJECT_NAME}/models
 )
 
+install(
+  PROGRAMS
+    scripts/omni_cmd_vel.py
+    scripts/keyboard_teleop.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_package()

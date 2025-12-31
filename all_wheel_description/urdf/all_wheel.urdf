@@ -163,6 +163,24 @@
     <axis xyz="1 0 0"/>
   </joint>
 
+  <gazebo reference="front_link">
+    <mu1>3.0</mu1>
+    <mu2>0.3</mu2>
+    <fdir1>0 1 0</fdir1>
+  </gazebo>
+
+  <gazebo reference="right_Link">
+    <mu1>3.0</mu1>
+    <mu2>0.3</mu2>
+    <fdir1>0 1 0</fdir1>
+  </gazebo>
+
+  <gazebo reference="left_Link">
+    <mu1>3.0</mu1>
+    <mu2>0.3</mu2>
+    <fdir1>0 1 0</fdir1>
+  </gazebo>
+
   <link name="imu_Link">
     <inertial>
       <origin xyz="1.38777878078145E-17 -1.64798730217798E-17 0.00117501372111883" rpy="0 0 0"/>

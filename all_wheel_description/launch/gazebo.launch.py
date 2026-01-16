@@ -16,7 +16,7 @@ def generate_launch_description():
     # 资源路径
     pkg_share = FindPackageShare(package=package_name).find(package_name)
     urdf_model_path = os.path.join(pkg_share, 'urdf', urdf_name)
-    gazebo_world_path = os.path.join(pkg_share, 'world', 'bot.world')
+    gazebo_world_path = os.path.join(pkg_share, 'world', 'hourse.world')
     controllers_path = os.path.join(pkg_share, 'config', 'ros2_controllers.yaml')
 
     # Gazebo 模型路径设置（保证 model:// 可解析）

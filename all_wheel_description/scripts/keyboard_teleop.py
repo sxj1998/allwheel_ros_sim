@@ -21,14 +21,14 @@ MOVE_BINDINGS = {
 }
 
 
-def get_key(timeout, settings):
-    tty.setraw(sys.stdin.fileno())
-    rlist, _, _ = select.select([sys.stdin], [], [], timeout)
+def get_key(timeout, settings, input_stream):
+    tty.setraw(input_stream.fileno())
+    rlist, _, _ = select.select([input_stream], [], [], timeout)
     if rlist:
-        key = sys.stdin.read(1)
+        key = input_stream.read(1)
     else:
         key = ''
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+    termios.tcsetattr(input_stream, termios.TCSADRAIN, settings)
     return key
 
 
@@ -53,13 +53,33 @@ def main():
     linear_speed = 0.3
     angular_speed = 0.8
 
-    settings = termios.tcgetattr(sys.stdin)
+    input_stream = sys.stdin
+    close_stream = False
+    if not input_stream.isatty():
+        try:
+            input_stream = open('/dev/tty')
+            close_stream = True
+        except OSError:
+            print('keyboard_teleop requires a TTY. Run from a terminal.', file=sys.stderr)
+            node.destroy_node()
+            rclpy.shutdown()
+            return
+
+    try:
+        settings = termios.tcgetattr(input_stream)
+    except termios.error:
+        if close_stream:
+            input_stream.close()
+        print('keyboard_teleop requires a TTY. Run from a terminal.', file=sys.stderr)
+        node.destroy_node()
+        rclpy.shutdown()
+        return
     print_instructions()
 
     last_moving = False
     try:
         while rclpy.ok():
-            key = get_key(0.1, settings)
+            key = get_key(0.1, settings, input_stream)
             twist = Twist()
 
             if key in MOVE_BINDINGS:
@@ -78,7 +98,9 @@ def main():
                     pub.publish(twist)
                     last_moving = False
     finally:
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+        termios.tcsetattr(input_stream, termios.TCSADRAIN, settings)
+        if close_stream:
+            input_stream.close()
         node.destroy_node()
         rclpy.shutdown()
 

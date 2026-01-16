@@ -127,6 +127,7 @@ ros2 run all_wheel_description keyboard_teleop.py
 ```
 mkdir -p ~/maps
 ros2 run nav2_map_server map_saver_cli -f ~/maps/all_wheel
+ros2 run nav2_map_server map_saver_cli -t /map -f hourse_map
 ```
 
 说明：

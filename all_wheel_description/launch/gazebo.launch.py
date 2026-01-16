@@ -53,6 +53,7 @@ def generate_launch_description():
         arguments=[
             '-entity', robot_name_in_model,
             '-file', urdf_model_path,
+            '-z', '0.05',
             '-timeout', '120'
         ],
         output='screen'

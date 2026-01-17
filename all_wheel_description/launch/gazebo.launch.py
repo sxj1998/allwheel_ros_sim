@@ -1,136 +1,121 @@
 import os
+from pathlib import Path
 
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction, SetEnvironmentVariable
-from launch.event_handlers import OnProcessExit, OnProcessStart
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command, LaunchConfiguration
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    # 基本标识
-    robot_name_in_model = 'all_wheel'
     package_name = 'all_wheel_description'
-    urdf_name = "all_wheel.urdf"
+    pkg_share = get_package_share_directory(package_name)
 
-    # 资源路径
-    pkg_share = FindPackageShare(package=package_name).find(package_name)
-    urdf_model_path = os.path.join(pkg_share, 'urdf', urdf_name)
-    gazebo_world_path = os.path.join(pkg_share, 'world', 'hourse.world')
-    controllers_path = os.path.join(pkg_share, 'config', 'ros2_controllers.yaml')
-
-    # Gazebo 模型路径设置（保证 model:// 可解析）
-    model_path_root = os.path.join(pkg_share, 'models')
-    map_model_path = os.path.join(pkg_share, 'world', 'map')
-    set_gazebo_model_path = SetEnvironmentVariable(
-        name='GAZEBO_MODEL_PATH',
-        value=':'.join([
-            p for p in [model_path_root, map_model_path, os.environ.get('GAZEBO_MODEL_PATH', '')] if p
-        ])
+    declare_world = DeclareLaunchArgument(
+        'world',
+        default_value=os.path.join(pkg_share, 'world', 'hourse.world'),
+        description='Gazebo Sim world file',
+    )
+    declare_use_sim_time = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use sim time if true',
+    )
+    declare_gz_version = DeclareLaunchArgument(
+        'gz_version',
+        default_value='6',
+        description='Gazebo Sim major version (ROS 2 Humble matches Ignition Gazebo 6)',
     )
 
-    # 禁用在线模型库（避免网络阻塞）
-    disable_model_db = SetEnvironmentVariable(
-        name='GAZEBO_MODEL_DATABASE_URI',
-        value=''
+    world = LaunchConfiguration('world')
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    gz_version = LaunchConfiguration('gz_version')
+
+    resource_path_list = [
+        os.environ.get('GZ_SIM_RESOURCE_PATH', ''),
+        os.environ.get('IGN_GAZEBO_RESOURCE_PATH', ''),
+        str(Path(pkg_share).parent.resolve()),
+        pkg_share,
+        os.path.join(pkg_share, 'world'),
+        os.path.join(pkg_share, 'models'),
+        os.path.join(pkg_share, 'meshes'),
+        '/usr/share/gazebo-11',
+    ]
+    resource_paths = os.pathsep.join([p for p in resource_path_list if p])
+    set_gz_resource_path = SetEnvironmentVariable(
+        name='GZ_SIM_RESOURCE_PATH',
+        value=resource_paths,
+    )
+    set_ign_resource_path = SetEnvironmentVariable(
+        name='IGN_GAZEBO_RESOURCE_PATH',
+        value=resource_paths,
     )
 
-    # 启动 Gazebo Classic（加载 ROS 插件与世界）
-    start_gazebo_cmd = ExecuteProcess(
-        cmd=[
-            'gazebo', '--verbose',
-            '-s', 'libgazebo_ros_init.so',
-            '-s', 'libgazebo_ros_factory.so',
-            gazebo_world_path
-        ],
-        output='screen'
+    urdf_file = os.path.join(pkg_share, 'urdf', 'all_wheel.urdf')
+    robot_description = Command(['xacro ', urdf_file])
+
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[{'robot_description': robot_description, 'use_sim_time': use_sim_time}],
     )
 
-    # 机器人插入（延长 timeout，避免启动慢）
-    spawn_entity_cmd = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=[
-            '-entity', robot_name_in_model,
-            '-file', urdf_model_path,
-            '-z', '0.05',
-            '-timeout', '120'
-        ],
-        output='screen'
+    gz_launch_path = os.path.join(
+        get_package_share_directory('ros_gz_sim'),
+        'launch',
+        'gz_sim.launch.py',
+    )
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([gz_launch_path]),
+        launch_arguments={
+            'gz_args': [world, ' -r -v 4'],
+            'gz_version': gz_version,
+        }.items(),
     )
 
-    # Gazebo 启动后再延迟几秒执行 spawn
-    delayed_spawn = RegisterEventHandler(
-        OnProcessStart(
-            target_action=start_gazebo_cmd,
-            on_start=[TimerAction(period=1.0, actions=[spawn_entity_cmd])]
-        )
-    )
-
-    # 加载 ros2_control 控制器并启动底盘速度转换
-    joint_state_broadcaster_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            'joint_state_broadcaster',
-            '--controller-manager', '/controller_manager',
-            '--param-file', controllers_path,
-            '--controller-manager-timeout', '60',
-        ],
+    spawn_robot = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=['-topic', 'robot_description', '-name', 'all_wheel', '-z', '0.05'],
         output='screen',
     )
-    wheel_velocity_controller_spawner = Node(
+
+    bridge_config = os.path.join(pkg_share, 'config', 'gz_bridge', 'gz_bridge.yaml')
+    ros_gz_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        parameters=[{'config_file': bridge_config}],
+    )
+
+    spawn_controllers = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=[
-            'wheel_velocity_controller',
-            '--controller-manager', '/controller_manager',
-            '--param-file', controllers_path,
-            '--controller-manager-timeout', '60',
-        ],
+        arguments=['joint_state_broadcaster', 'wheel_velocity_controller'],
         output='screen',
     )
-    omni_cmd_vel_cmd = Node(
+
+    omni_cmd_vel = Node(
         package=package_name,
         executable='omni_cmd_vel.py',
         name='omni_cmd_vel',
         output='screen',
-        parameters=[{'use_sim_time': True}],
-    )
-    start_controllers = RegisterEventHandler(
-        OnProcessExit(
-            target_action=spawn_entity_cmd,
-            on_exit=[
-                joint_state_broadcaster_spawner,
-                wheel_velocity_controller_spawner,
-                omni_cmd_vel_cmd,
-            ],
-        )
+        parameters=[{'use_sim_time': use_sim_time}],
     )
 
-    # ROS 2 节点：TF、关节状态、可视化
-    start_robot_state_publisher_cmd = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        arguments=[urdf_model_path],
-        output='screen',
-        parameters=[{'use_sim_time': True}],
-    )
-    start_rviz_cmd = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='screen',
-    )
-
-    # 组装 LaunchDescription
     ld = LaunchDescription()
-    ld.add_action(set_gazebo_model_path)
-    ld.add_action(disable_model_db)
-    ld.add_action(start_gazebo_cmd)
-    ld.add_action(delayed_spawn)
-    ld.add_action(start_controllers)
-    ld.add_action(start_robot_state_publisher_cmd)
-    ld.add_action(start_rviz_cmd)
+    ld.add_action(declare_world)
+    ld.add_action(declare_use_sim_time)
+    ld.add_action(declare_gz_version)
+    ld.add_action(set_gz_resource_path)
+    ld.add_action(set_ign_resource_path)
+    ld.add_action(robot_state_publisher)
+    ld.add_action(gazebo)
+    ld.add_action(ros_gz_bridge)
+    ld.add_action(spawn_robot)
+    ld.add_action(spawn_controllers)
+    ld.add_action(omni_cmd_vel)
 
     return ld

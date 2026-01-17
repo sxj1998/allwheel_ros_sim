@@ -1,6 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -26,17 +26,19 @@ def generate_launch_description():
         urdf_name,
     ])
 
+    robot_description = {'robot_description': Command(['xacro ', urdf_model_path])}
+
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        arguments=[urdf_model_path]
+        parameters=[robot_description]
     )
 
     joint_state_publisher_node = Node(
         package='joint_state_publisher_gui',
         executable='joint_state_publisher_gui',
         name='joint_state_publisher_gui',
-        arguments=[urdf_model_path]
+        parameters=[robot_description]
     )
 
     rviz2_node = Node(

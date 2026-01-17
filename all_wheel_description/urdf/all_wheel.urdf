@@ -196,9 +196,10 @@
   </joint>
 
   <gazebo reference="lidar_link">
-    <sensor name="lidar" type="ray">
-      <pose>0 0 0 0 0 0</pose>
+    <sensor name="gpu_lidar" type="gpu_lidar">
+      <topic>/scan</topic>
       <update_rate>10.0</update_rate>
+      <gz_frame_id>lidar_link</gz_frame_id>
       <ray>
         <scan>
           <horizontal>
@@ -214,13 +215,8 @@
           <resolution>0.01</resolution>
         </range>
       </ray>
-      <plugin name="gazebo_ros_lidar" filename="libgazebo_ros_ray_sensor.so">
-        <ros>
-          <remapping>~/out:=scan</remapping>
-        </ros>
-        <output_type>sensor_msgs/LaserScan</output_type>
-        <frame_name>lidar_link</frame_name>
-      </plugin>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
     </sensor>
   </gazebo>
 
@@ -291,116 +287,59 @@
   </joint>
   <gazebo reference="imu_Link">
     <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
+      <topic>/imu</topic>
       <update_rate>100.0</update_rate>
-      <imu>
-        <angular_velocity>
-          <x>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.0002</stddev>
-            </noise>
-          </x>
-          <y>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.0002</stddev>
-            </noise>
-          </y>
-          <z>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.0002</stddev>
-            </noise>
-          </z>
-        </angular_velocity>
-        <linear_acceleration>
-          <x>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.0003</stddev>
-            </noise>
-          </x>
-          <y>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.0003</stddev>
-            </noise>
-          </y>
-          <z>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.0003</stddev>
-            </noise>
-          </z>
-        </linear_acceleration>
-      </imu>
-      <plugin name="gazebo_ros_imu" filename="libgazebo_ros_imu_sensor.so">
-        <ros>
-          <remapping>~/out:=imu/data</remapping>
-        </ros>
-        <frame_name>imu_Link</frame_name>
-      </plugin>
+      <always_on>true</always_on>
     </sensor>
   </gazebo>
 
   <gazebo reference="left_camera_link">
     <sensor name="left_camera" type="camera">
+      <gz_frame_id>left_camera_link</gz_frame_id>
       <pose>0 0 0 0 0 0</pose>
-      <always_on>true</always_on>
-      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <topic>/stereo/left/image</topic>
       <camera>
+        <camera_info_topic>/stereo/left/camera_info</camera_info_topic>
         <horizontal_fov>1.047</horizontal_fov>
         <image>
           <width>640</width>
           <height>480</height>
-          <format>R8G8B8</format>
         </image>
         <clip>
           <near>0.02</near>
           <far>30.0</far>
         </clip>
       </camera>
-      <plugin name="gazebo_ros_left_camera" filename="libgazebo_ros_camera.so">
-        <ros>
-          <namespace>/stereo/left</namespace>
-        </ros>
-        <camera_name>left</camera_name>
-        <frame_name>left_camera_link</frame_name>
-      </plugin>
     </sensor>
   </gazebo>
 
   <gazebo reference="right_camera_link">
     <sensor name="right_camera" type="camera">
+      <gz_frame_id>right_camera_link</gz_frame_id>
       <pose>0 0 0 0 0 0</pose>
-      <always_on>true</always_on>
-      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <topic>/stereo/right/image</topic>
       <camera>
+        <camera_info_topic>/stereo/right/camera_info</camera_info_topic>
         <horizontal_fov>1.047</horizontal_fov>
         <image>
           <width>640</width>
           <height>480</height>
-          <format>R8G8B8</format>
         </image>
         <clip>
           <near>0.02</near>
           <far>30.0</far>
         </clip>
       </camera>
-      <plugin name="gazebo_ros_right_camera" filename="libgazebo_ros_camera.so">
-        <ros>
-          <namespace>/stereo/right</namespace>
-        </ros>
-        <camera_name>right</camera_name>
-        <frame_name>right_camera_link</frame_name>
-      </plugin>
     </sensor>
   </gazebo>
 
-  <ros2_control name="GazeboSystem" type="system">
+  <ros2_control name="IgnitionSystem" type="system">
     <hardware>
-      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
     </hardware>
     <joint name="front_wheel_joint">
       <command_interface name="velocity"/>
@@ -420,8 +359,13 @@
   </ros2_control>
 
   <gazebo>
-    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-      <parameters>/home/shexingju/code/ROS/ALL_WHEEL_CHASSIS/install/all_wheel_description/share/all_wheel_description/config/ros2_controllers.yaml</parameters>
+    <plugin filename="libignition-gazebo6-sensors-system.so"
+      name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin name="ignition::gazebo::systems::Imu" filename="libignition-gazebo6-imu-system.so" />
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find all_wheel_description)/config/ros2_controllers.yaml</parameters>
     </plugin>
   </gazebo>
 </robot>

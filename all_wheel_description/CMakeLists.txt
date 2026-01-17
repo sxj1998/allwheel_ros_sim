@@ -41,6 +41,7 @@ install(
   PROGRAMS
     scripts/omni_cmd_vel.py
     scripts/keyboard_teleop.py
+    scripts/robot_description_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
